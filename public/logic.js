@@ -1,25 +1,119 @@
 (function () {
-  const ZODIAC_RANGES = [
-    ["♈", "Овен", [3, 21], [4, 19]],
-    ["♉", "Телец", [4, 20], [5, 20]],
-    ["♊", "Близнецы", [5, 21], [6, 20]],
-    ["♋", "Рак", [6, 21], [7, 22]],
-    ["♌", "Лев", [7, 23], [8, 22]],
-    ["♍", "Дева", [8, 23], [9, 22]],
-    ["♎", "Весы", [9, 23], [10, 22]],
-    ["♏", "Скорпион", [10, 23], [11, 21]],
-    ["♐", "Стрелец", [11, 22], [12, 21]],
-    ["♑", "Козерог", [12, 22], [1, 19]],
-    ["♒", "Водолей", [1, 20], [2, 18]],
-    ["♓", "Рыбы", [2, 19], [3, 20]],
-  ];
+  class ZodiacService {
+    constructor() {
+      this.ELEMENTS_ICONS = {
+        Огонь: "🔥",
+        Земля: "🌍",
+        Воздух: "💨",
+        Вода: "💧",
+      };
 
-  const ELEMENTS = {
-    Огонь: ["♈", "♌", "♐"],
-    Земля: ["♉", "♍", "♑"],
-    Воздух: ["♊", "♎", "♒"],
-    Вода: ["♋", "♏", "♓"],
-  };
+      this.ZODIAC_RANGES = [
+        ["♈", "Овен", [3, 21], [4, 19]],
+        ["♉", "Телец", [4, 20], [5, 20]],
+        ["♊", "Близнецы", [5, 21], [6, 20]],
+        ["♋", "Рак", [6, 21], [7, 22]],
+        ["♌", "Лев", [7, 23], [8, 22]],
+        ["♍", "Дева", [8, 23], [9, 22]],
+        ["♎", "Весы", [9, 23], [10, 22]],
+        ["♏", "Скорпион", [10, 23], [11, 21]],
+        ["♐", "Стрелец", [11, 22], [12, 21]],
+        ["♑", "Козерог", [12, 22], [1, 19]],
+        ["♒", "Водолей", [1, 20], [2, 18]],
+        ["♓", "Рыбы", [2, 19], [3, 20]],
+      ];
+
+      this.ELEMENTS = {
+        Огонь: ["♈", "♌", "♐"],
+        Земля: ["♉", "♍", "♑"],
+        Воздух: ["♊", "♎", "♒"],
+        Вода: ["♋", "♏", "♓"],
+      };
+
+      this.ASPECT_SCORE = { 0: 72, 1: 55, 2: 85, 3: 50, 4: 90, 5: 53, 6: 88 };
+    }
+
+    _index(sign) {
+      return this.ZODIAC_RANGES.findIndex((item) => item[0] === sign);
+    }
+
+    _distance(sign1, sign2) {
+      const distance = Math.abs(this._index(sign1) - this._index(sign2));
+      return Math.min(distance, 12 - distance);
+    }
+
+    calculate_zodiac_compatibility(date1, date2) {
+      const sign1 = this.get_zodiac_sign(date1);
+      const sign2 = this.get_zodiac_sign(date2);
+
+      const element1 = this.get_element(sign1);
+      const element2 = this.get_element(sign2);
+
+      const signs_comp = this.get_signs_compatibility(sign1, sign2);
+      const elements_comp = this.get_elements_compatibility(element1, element2);
+      const total_compatibility = Math.round(signs_comp * 0.85 + elements_comp * 0.15);
+
+      return [total_compatibility, {
+        sign1,
+        sign2,
+        element1,
+        element2,
+        signs_compatibility: Math.round(signs_comp),
+        elements_compatibility: Math.round(elements_comp),
+      }];
+    }
+
+    get_signs_compatibility(sign1, sign2) {
+      return floatish(this.ASPECT_SCORE[this._distance(sign1, sign2)]);
+    }
+
+    get_elements_compatibility(element1, element2) {
+      if (element1 === element2) {
+        return 90;
+      }
+
+      const friendly = [
+        new Set(["Огонь", "Воздух"]),
+        new Set(["Земля", "Вода"]),
+      ];
+
+      if (friendly.some((pair) => pair.has(element1) && pair.has(element2))) {
+        return 90;
+      }
+
+      return 55;
+    }
+
+    get_element(sign) {
+      for (const [element, signs] of Object.entries(this.ELEMENTS)) {
+        if (signs.includes(sign)) {
+          return element;
+        }
+      }
+      return null;
+    }
+
+    get_zodiac_sign(date) {
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+
+      for (const [symbol, , start, end] of this.ZODIAC_RANGES) {
+        if ((month === start[0] && day >= start[1]) || (month === end[0] && day <= end[1])) {
+          return symbol;
+        }
+      }
+
+      return "♑";
+    }
+
+    get_sign_name(sign) {
+      return this.ZODIAC_RANGES.find((item) => item[0] === sign)?.[1] || "Неизвестный знак";
+    }
+  }
+
+  function floatish(value) {
+    return Number.parseFloat(String(value));
+  }
 
   const ELEMENT_DATA = {
     Огонь: {
@@ -75,80 +169,19 @@
     6: "Разведите полюса по этапам.",
   };
 
-  function indexForSign(sign) {
-    return ZODIAC_RANGES.findIndex((item) => item[0] === sign);
-  }
-
-  function distanceBetweenSigns(sign1, sign2) {
-    const firstIndex = indexForSign(sign1);
-    const secondIndex = indexForSign(sign2);
-    const rawDistance = Math.abs(firstIndex - secondIndex);
-    return Math.min(rawDistance, 12 - rawDistance);
-  }
-
-  function getSign(date) {
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-
-    for (const [symbol, , start, end] of ZODIAC_RANGES) {
-      if ((month === start[0] && day >= start[1]) || (month === end[0] && day <= end[1])) {
-        return symbol;
-      }
-    }
-
-    return "♑";
-  }
-
-  function getSignName(sign) {
-    const record = ZODIAC_RANGES.find((item) => item[0] === sign);
-    return record ? record[1] : "Неизвестный знак";
-  }
-
-  function getElement(sign) {
-    for (const [element, signs] of Object.entries(ELEMENTS)) {
-      if (signs.includes(sign)) {
-        return element;
-      }
-    }
-
-    return null;
-  }
-
-  function getAspect(sign1, sign2) {
-    const distance = distanceBetweenSigns(sign1, sign2);
-    return { ...ASPECT_DATA[distance], distance };
-  }
-
-  function getElementCompatibility(element1, element2) {
-    if (element1 === element2) {
-      return 90;
-    }
-
-    const friendlyPairs = [
-      new Set(["Огонь", "Воздух"]),
-      new Set(["Земля", "Вода"]),
-    ];
-
-    if (friendlyPairs.some((pair) => pair.has(element1) && pair.has(element2))) {
-      return 90;
-    }
-
-    return 55;
-  }
-
   function getTotalLabel(total) {
     return TOTAL_LABELS.find((item) => total <= item.max) || TOTAL_LABELS[TOTAL_LABELS.length - 1];
   }
 
-  function buildPerson(date, label) {
-    const sign = getSign(date);
-    const element = getElement(sign);
+  function buildPerson(service, date, label) {
+    const sign = service.get_zodiac_sign(date);
+    const element = service.get_element(sign);
     const elementData = element ? ELEMENT_DATA[element] : null;
 
     return {
       label,
       sign,
-      sign_name: getSignName(sign),
+      sign_name: service.get_sign_name(sign),
       element,
       element_emoji: elementData ? elementData.emoji : "",
       role_name: elementData ? elementData.role : "",
@@ -158,11 +191,11 @@
   }
 
   function compute(date1, date2) {
-    const person1 = buildPerson(date1, "Первый человек");
-    const person2 = buildPerson(date2, "Второй человек");
-    const aspect = getAspect(person1.sign, person2.sign);
-    const elementsCompatibility = getElementCompatibility(person1.element, person2.element);
-    const total = Math.round(aspect.score * 0.85 + elementsCompatibility * 0.15);
+    const service = new ZodiacService();
+    const [total, details] = service.calculate_zodiac_compatibility(date1, date2);
+    const person1 = buildPerson(service, date1, "Первый человек");
+    const person2 = buildPerson(service, date2, "Второй человек");
+    const aspect = ASPECT_DATA[service._distance(details.sign1, details.sign2)];
     const totalLabel = getTotalLabel(total);
 
     return {
@@ -174,13 +207,13 @@
       pair: {
         aspect_name: aspect.name,
         dynamic_phrase: aspect.phrase,
-        friction: person1.element === person2.element
+        friction: details.element1 === details.element2
           ? "Похожий стиль усиливает друг друга, но даёт слепые зоны."
           : "Разные стили полезны, если разделить зоны влияния.",
-        synergy: person1.element === person2.element
-          ? `Оба в стихии ${person1.element.toLowerCase()}.`
-          : `${person1.element || "Первая стихия"} + ${person2.element || "Вторая стихия"} = дополняющая связка.`,
-        tip: TIP_BY_DISTANCE[aspect.distance] || "Сначала договоритесь о правилах.",
+        synergy: details.element1 === details.element2
+          ? `Оба в стихии ${details.element1.toLowerCase()}.`
+          : `${details.element1 || "Первая стихия"} + ${details.element2 || "Вторая стихия"} = дополняющая связка.`,
+        tip: TIP_BY_DISTANCE[service._distance(details.sign1, details.sign2)] || "Сначала договоритесь о правилах.",
       },
     };
   }
