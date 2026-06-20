@@ -4,30 +4,49 @@
   const date2Input = document.getElementById("date-2");
   const results = document.getElementById("results");
   const template = document.getElementById("result-template");
+  const shareButton = document.getElementById("share-btn");
+  let latestResult = null;
 
   function isoToDate(value) {
     return new Date(`${value}T12:00:00`);
+  }
+
+  function renderEmptyState(message) {
+    results.innerHTML = `
+      <article class="result-card empty-state">
+        <div class="result-top">
+          <div class="score-ring score-ring-empty">
+            <div>
+              <strong>--</strong>
+              <span class="score-label">${message}</span>
+            </div>
+          </div>
+          <div class="pair-stats">
+            <p class="pair-title">Готово для расчёта</p>
+            <p class="pair-phrase">Выберите две даты и нажмите «Смотреть».</p>
+          </div>
+        </div>
+      </article>
+    `;
   }
 
   function renderPerson(target, person) {
     target.innerHTML = `
       <strong>${person.label}</strong>
       <h3>${person.sign} ${person.sign_name}</h3>
-      <p>${person.element_emoji} ${person.element}</p>
-      <p><strong>Роль:</strong> ${person.role_name}</p>
-      <p><strong>Сила:</strong> ${person.role_strength}</p>
-      <p><strong>Риск:</strong> ${person.role_risk}</p>
+      <p>${person.element_emoji} ${person.element} · ${person.role_name}</p>
     `;
     target.classList.add("people-card");
   }
 
   function renderResults(data) {
+    latestResult = data;
     results.innerHTML = "";
     const fragment = template.content.cloneNode(true);
 
     fragment.querySelector(".score-value").textContent = `${data.total}%`;
     fragment.querySelector(".score-label").textContent = `${data.total_emoji} ${data.total_phrase}`;
-    fragment.querySelector(".pair-title").textContent = `${data.pair.aspect_name} · рабочая динамика пары`;
+    fragment.querySelector(".pair-title").textContent = `${data.pair.aspect_name} · работа`;
     fragment.querySelector(".pair-phrase").textContent = data.pair.dynamic_phrase;
 
     const peopleGrid = fragment.querySelector(".people-grid");
@@ -48,7 +67,7 @@
   function handleSubmit(event) {
     event.preventDefault();
     if (!date1Input.value || !date2Input.value) {
-      results.innerHTML = "<p class='card form-card'>Выберите обе даты.</p>";
+      renderEmptyState("Нужны обе даты");
       return;
     }
 
@@ -56,7 +75,25 @@
     renderResults(compatibility);
   }
 
+  function handleShare() {
+    if (!latestResult) {
+      return;
+    }
+
+    const text = `${latestResult.total}% · ${latestResult.pair.aspect_name} · ${latestResult.person1.sign_name} + ${latestResult.person2.sign_name}`;
+
+    if (navigator.share) {
+      navigator.share({ title: "TheMatch", text }).catch(() => {});
+      return;
+    }
+
+    navigator.clipboard?.writeText(text).catch(() => {});
+  }
+
   form.addEventListener("submit", handleSubmit);
+  shareButton.addEventListener("click", handleShare);
+
+  renderEmptyState("Здесь будет результат");
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0f172a" />
-  <meta name="description" content="TheMatch — астро-совместимость коллег и команды по датам рождения." />
+  <meta name="theme-color" content="#07111c" />
+  <meta name="description" content="TheMatch" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="style.css" />
@@ -12,68 +12,70 @@
 </head>
 <body>
   <main class="shell">
-    <section class="hero">
-      <p class="eyebrow">TheMatch</p>
-      <h1>Астро-совместимость для коллег и команд</h1>
-      <p class="lead">
-        Статический PWA-расчёт по датам рождения. Без бэкенда, без базы, без сети.
-      </p>
-    </section>
+    <header class="topbar card">
+      <div>
+        <p class="eyebrow">TheMatch</p>
+        <p class="eyebrow-sub">быстрый рабочий матч</p>
+      </div>
+      <button id="share-btn" class="icon-btn" type="button" aria-label="Поделиться результатом">⇪</button>
+    </header>
 
-    <section class="card form-card" aria-labelledby="calc-title">
-      <div class="section-head">
-        <h2 id="calc-title">Проверка пары</h2>
-        <p>Введите две даты рождения и посмотрите, как вы работаете вместе.</p>
+    <section class="workspace card" aria-labelledby="calc-title">
+      <div class="compact-head">
+        <h1 id="calc-title">Коллеги</h1>
+        <p class="microcopy">Две даты. Один экран.</p>
       </div>
 
-      <form id="compat-form" class="form-grid">
+      <form id="compat-form" class="form-grid" autocomplete="off">
         <label>
-          <span>Первый человек</span>
+          <span>Дата 1</span>
           <input id="date-1" name="date1" type="date" required />
         </label>
         <label>
-          <span>Второй человек</span>
+          <span>Дата 2</span>
           <input id="date-2" name="date2" type="date" required />
         </label>
-        <button type="submit">Посчитать совместимость</button>
+        <button type="submit">Смотреть</button>
       </form>
 
-      <p class="disclaimer">
-        Это не оценка людей и не инструмент для найма. Только командный ice-breaker.
-      </p>
-    </section>
+      <div class="result-dock">
+        <span class="result-dock-label">Результат</span>
+      </div>
 
-    <section id="results" class="results" aria-live="polite"></section>
+      <section id="results" class="results" aria-live="polite"></section>
+    </section>
   </main>
 
   <template id="result-template">
-    <article class="card result-card">
-      <div class="score-ring">
-        <div>
-          <strong class="score-value"></strong>
-          <span class="score-label"></span>
+    <article class="result-card">
+      <div class="result-top">
+        <div class="score-ring">
+          <div>
+            <strong class="score-value"></strong>
+            <span class="score-label"></span>
+          </div>
         </div>
-      </div>
-      <div class="section-head">
-        <h2 class="pair-title"></h2>
-        <p class="pair-phrase"></p>
+        <div class="pair-stats">
+          <p class="pair-title"></p>
+          <p class="pair-phrase"></p>
+        </div>
       </div>
       <div class="people-grid"></div>
       <div class="pair-grid">
         <div>
-          <h3>Как вместе</h3>
+          <span>Ритм</span>
           <p class="pair-dynamic"></p>
         </div>
         <div>
-          <h3>Трение</h3>
+          <span>Трение</span>
           <p class="pair-friction"></p>
         </div>
         <div>
-          <h3>Сила пары</h3>
+          <span>Сила</span>
           <p class="pair-synergy"></p>
         </div>
         <div>
-          <h3>Совет</h3>
+          <span>Совет</span>
           <p class="pair-tip"></p>
         </div>
       </div>
