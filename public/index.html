@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="TheMatch — астро-совместимость коллег и команды по датам рождения." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="style.css" />
+  <title>TheMatch</title>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">TheMatch</p>
+      <h1>Астро-совместимость для коллег и команд</h1>
+      <p class="lead">
+        Статический PWA-расчёт по датам рождения. Без бэкенда, без базы, без сети.
+      </p>
+    </section>
+
+    <section class="card form-card" aria-labelledby="calc-title">
+      <div class="section-head">
+        <h2 id="calc-title">Проверка пары</h2>
+        <p>Введите две даты рождения и посмотрите, как вы работаете вместе.</p>
+      </div>
+
+      <form id="compat-form" class="form-grid">
+        <label>
+          <span>Первый человек</span>
+          <input id="date-1" name="date1" type="date" required />
+        </label>
+        <label>
+          <span>Второй человек</span>
+          <input id="date-2" name="date2" type="date" required />
+        </label>
+        <button type="submit">Посчитать совместимость</button>
+      </form>
+
+      <p class="disclaimer">
+        Это не оценка людей и не инструмент для найма. Только командный ice-breaker.
+      </p>
+    </section>
+
+    <section id="results" class="results" aria-live="polite"></section>
+  </main>
+
+  <template id="result-template">
+    <article class="card result-card">
+      <div class="score-ring">
+        <div>
+          <strong class="score-value"></strong>
+          <span class="score-label"></span>
+        </div>
+      </div>
+      <div class="section-head">
+        <h2 class="pair-title"></h2>
+        <p class="pair-phrase"></p>
+      </div>
+      <div class="people-grid"></div>
+      <div class="pair-grid">
+        <div>
+          <h3>Как вместе</h3>
+          <p class="pair-dynamic"></p>
+        </div>
+        <div>
+          <h3>Трение</h3>
+          <p class="pair-friction"></p>
+        </div>
+        <div>
+          <h3>Сила пары</h3>
+          <p class="pair-synergy"></p>
+        </div>
+        <div>
+          <h3>Совет</h3>
+          <p class="pair-tip"></p>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script src="logic.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

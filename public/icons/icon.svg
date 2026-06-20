@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">TheMatch</title>
+  <desc id="desc">Stylized star and orbit icon for TheMatch application.</desc>
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8dd6ff" />
+      <stop offset="100%" stop-color="#7df0bf" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="#08111f" />
+  <circle cx="128" cy="128" r="84" fill="none" stroke="url(#g)" stroke-width="12" opacity="0.45" />
+  <path d="M128 54l14.5 45h47.3l-38.3 27.8 14.6 45.1L128 144l-38.1 27.9 14.6-45.1L66.2 99h47.3z" fill="url(#g)" />
+  <circle cx="76" cy="72" r="9" fill="#8dd6ff" />
+  <circle cx="182" cy="184" r="9" fill="#7df0bf" />
+</svg>
